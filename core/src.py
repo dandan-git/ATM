@@ -2,6 +2,8 @@
 # - 注册
 
 from interface import user_interface
+from lib import common
+user_key = {'token': None, 'username':None}
 
 
 def register():
@@ -12,20 +14,36 @@ def register():
         # 判断密码与确认密码是否一致
         if password == re_password:
             # 密码一致时执行注册接口
-            res = user_interface.register_interface(username, password)
-            print(res)
-            return res  # 两种结果1已存在，2注册成功
+            flag, msg = user_interface.register_interface(username, password)
+            if flag:
+                print(msg)
+                return
+            else:
+                print(msg)
+                return
         else:
             print("两次密码不一致")
 
 
 # 登录
-
-
 def login():
-    pass
+    while True:
+        username = input("请输入用户名：").strip()
+        password = input("请输入密码:").strip()
+        flag, msg = user_interface.login_interface(username, password)
+        if flag:
+            user_key['token'] = username + 'abc'
+            user_key['username'] = username
+            print(msg)
+            return
+        else:
+            print(msg)
 
 # - 查看余额
+@common.login_auth
+def check_balance():
+    balance = user_interface.check_bal_interface(user_key.get('username'))
+    print(balance)
 # - 提现功能
 # - 还款功能
 # - 转账功能
@@ -39,7 +57,7 @@ def login():
 func_dic = {
     '1': register,
     '2': login,
-    '3': '查看余额',
+    '3': check_balance,
     '4': '提现功能',
     '5': '还款功能',
     '6': '转账功能',
